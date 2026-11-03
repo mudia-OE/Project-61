@@ -91,6 +91,16 @@ $$('a',mobile).forEach(a=>a.addEventListener('click',()=>{mobile.hidden=true;men
 const observer= 'IntersectionObserver' in window ? new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}})},{threshold:.06}):null;
 $$('.reveal').forEach(el=>{if(observer)observer.observe(el);else el.classList.add('visible')});
 if(!reduced.matches&&window.matchMedia('(pointer:fine)').matches){
+ tiles.forEach(tile=>{
+  let frame=0;
+  tile.addEventListener('pointermove',event=>{
+   if(frame)return;
+   const rect=tile.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;
+   frame=requestAnimationFrame(()=>{tile.style.setProperty('--pointer-x',(x*10).toFixed(1)+'px');tile.style.setProperty('--pointer-y',(y*10).toFixed(1)+'px');frame=0});
+  });
+  tile.addEventListener('pointerleave',()=>{tile.style.removeProperty('--pointer-x');tile.style.removeProperty('--pointer-y')});
+ });
+
  document.body.classList.add('has-pointer');let raf=0,last=null;
  window.addEventListener('pointermove',e=>{last=e;if(raf)return;raf=requestAnimationFrame(()=>{const aura=$('#cursor-aura');aura.style.left=last.clientX+'px';aura.style.top=last.clientY+'px';raf=0})},{passive:true});
 }
